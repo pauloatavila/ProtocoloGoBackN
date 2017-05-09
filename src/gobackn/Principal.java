@@ -5,6 +5,7 @@
  */
 package gobackn;
 
+import java.awt.Cursor;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
@@ -19,7 +20,6 @@ public class Principal extends javax.swing.JFrame {
 
 //    String[] numString = {"1","2","3","4","5","6","7","8","9","10"};
     String[] probelmasString = {"Não chegará o pacote", "Não chegará a confirmação do pacote"};
-    int numPacotes = 0;
     ArrayList<Integer> problemasArrayList = new ArrayList<>();
     ArrayList<Integer> listProblemas = new ArrayList<>();
     int tamanhoDaJanela = 0;
@@ -28,6 +28,8 @@ public class Principal extends javax.swing.JFrame {
     ArrayList<Integer> pctRecebidos = new ArrayList<>();
     ArrayList<Integer> daVezNaJanela = new ArrayList<>();
     int disponivelJanela = 0;
+    float valorProgressoPorVez = 0;
+    float valorRealBarraDeProgresso = 0;
 
     public Principal() {
         initComponents();
@@ -78,6 +80,7 @@ public class Principal extends javax.swing.JFrame {
         reciverTextArea = new javax.swing.JTextArea();
         executarBtt = new javax.swing.JButton();
         tamanhoJanelaLabel = new javax.swing.JLabel();
+        barraProgresso = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -142,8 +145,11 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        tamanhoJanelaLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tamanhoJanelaLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         tamanhoJanelaLabel.setText("Tamanho da Janela: X");
+
+        barraProgresso.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        barraProgresso.setStringPainted(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -184,12 +190,15 @@ public class Principal extends javax.swing.JFrame {
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel6)
-                                .addGap(313, 313, 313)))
+                                .addGap(313, 313, 313))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(tamanhoJanelaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(83, 83, 83)
+                                .addComponent(barraProgresso, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(tamanhoJanelaLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1))
+                        .addComponent(jScrollPane1)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -212,14 +221,16 @@ public class Principal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tamanhoJanelaLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tamanhoJanelaLabel)
+                    .addComponent(barraProgresso, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
                     .addComponent(jScrollPane2))
                 .addContainerGap())
         );
@@ -244,6 +255,7 @@ public class Principal extends javax.swing.JFrame {
         }
         tamanhoDaJanela = numPacotesComboBox.getSelectedIndex() + 1;
         numeroDePacotesRestantes = (numPacotesComboBox.getSelectedIndex() + 1);
+        valorProgressoPorVez = 100/(numPacotesComboBox.getSelectedIndex() + 1);
     }//GEN-LAST:event_numPacotesComboBoxPopupMenuWillBecomeInvisible
 
     private void numProblemasComboBoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_numProblemasComboBoxPopupMenuWillBecomeInvisible
@@ -251,7 +263,9 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_numProblemasComboBoxPopupMenuWillBecomeInvisible
 
     private void executarBttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executarBttActionPerformed
-
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
         for (int j = problemasArrayList.size() - 1; j >= 0; j--) {
             problemasArrayList.remove(j);
         }
@@ -377,10 +391,16 @@ public class Principal extends javax.swing.JFrame {
 
             if (daVezNaJanela.get(i) == 1) {
                 if(!temProblema){
-                reciverTextArea.append("Pacote " + daVezNaJanela.get(i) + " recebido com sucesso\n");
-                reciverTextArea.append("[ACK do pacote " + daVezNaJanela.get(i) + " enviado]\n");
-                senderTextArea.append("[ACK do pacote " + daVezNaJanela.get(i) + " recebido]\n");
-                pctRecebidos.add(daVezNaJanela.get(i));
+                    reciverTextArea.append("Pacote " + daVezNaJanela.get(i) + " recebido com sucesso\n");
+                    reciverTextArea.append("[ACK do pacote " + daVezNaJanela.get(i) + " enviado]\n");
+                    senderTextArea.append("[ACK do pacote " + daVezNaJanela.get(i) + " recebido]\n");
+                    pctRecebidos.add(daVezNaJanela.get(i));
+                    valorRealBarraDeProgresso = valorRealBarraDeProgresso + valorProgressoPorVez;
+                    barraProgresso.setValue((int) (valorRealBarraDeProgresso));
+                    if(daVezNaJanela.get(i) == (numPacotesComboBox.getSelectedIndex() + 1)){
+                        barraProgresso.setValue(100);
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
                 } else {
                     int indexPctDaVez = listProblemas.indexOf(daVezNaJanela.get(i));
                     if (problemasArrayList.get(indexPctDaVez) == 1) {
@@ -417,6 +437,13 @@ public class Principal extends javax.swing.JFrame {
                         reciverTextArea.append("[ACK do pacote " + daVezNaJanela.get(i) + " enviado]\n");
                         senderTextArea.append("[ACK do pacote " + daVezNaJanela.get(i) + " recebido]\n");
                         pctRecebidos.add(daVezNaJanela.get(i));
+                        System.out.println("PACOTE: " + daVezNaJanela.get(i) + " recebido, progresso atual: "+valorRealBarraDeProgresso+"\n");
+                        valorRealBarraDeProgresso = valorRealBarraDeProgresso + valorProgressoPorVez;
+                        barraProgresso.setValue((int) (valorRealBarraDeProgresso));
+                        if(daVezNaJanela.get(i) == (numPacotesComboBox.getSelectedIndex() + 1)){
+                            barraProgresso.setValue(100);
+                            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        }
                     }
                 }
             }
@@ -572,6 +599,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JProgressBar barraProgresso;
     private javax.swing.JTextArea descricaoProblemasTextArea;
     private javax.swing.JButton executarBtt;
     private javax.swing.JLabel jLabel1;
